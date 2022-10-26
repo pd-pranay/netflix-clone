@@ -2,7 +2,9 @@ import React, { useEffect } from "react";
 import "./App.css";
 import HomeScreen from "./screens/HomeScreen";
 import LoginScreen from "./screens/LoginScreen";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import ProfileScreen from "./screens/ProfileScreen";
+import history from './history';
+import { Router, Switch, Route } from "react-router-dom";
 import { auth } from "./firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout, selectUser } from "./features/userSlice";
@@ -13,7 +15,7 @@ function App() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        console.log(user);
+        console.log('Logged in', user);
         dispatch(
           login({
             uid: user.uid,
@@ -21,6 +23,7 @@ function App() {
           })
         );
       } else {
+        console.log('Logged Out');
         dispatch(logout);
       }
     });
@@ -29,11 +32,14 @@ function App() {
 
   return (
     <div className="app">
-      <Router>
+      <Router history={history}>
         {!user ? (
           <LoginScreen />
         ) : (
           <Switch>
+            <Route path="/profile">
+              <ProfileScreen />
+            </Route>
             <Route exact path="/">
               <HomeScreen />
             </Route>
